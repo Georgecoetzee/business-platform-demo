@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northbeam Ops - Business Management Platform (Demo)</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#16202e;--mute:#64718a;--line:#e3e8f0;--side:#111a2b;--acc:#2f6bff;--acc2:#e8efff;--ok:#18a56b;--warn:#e69a14;--bad:#e5484d}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 system-ui,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);display:flex;min-height:100vh}
+aside{width:228px;background:var(--side);color:#c5cee0;padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.brand{color:#fff;font-weight:700;font-size:16px;padding:4px 10px 16px;display:flex;gap:8px;align-items:center}
+.brand i{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#2f6bff,#6ea0ff);display:inline-block}
+.nav{padding:9px 12px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;user-select:none}
+.nav:hover{background:#1b2740}.nav.on{background:var(--acc);color:#fff}
+.nav.lock{opacity:.4}
+.side-foot{margin-top:auto;font-size:12px;padding:10px;border-top:1px solid #243150}
+main{flex:1;min-width:0}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0;flex:1}
+select,input,button,textarea{font:inherit}
+select,input[type=text],input[type=date],textarea{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:#fff;color:var(--ink)}
+button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--acc)}
+button.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+button.sm{padding:3px 9px;font-size:12px}
+.demo{background:#fff7e0;color:#7a5a00;font-size:12px;padding:6px 24px;border-bottom:1px solid #f3e2a8}
+.wrap{padding:22px 24px}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
+@media(max-width:1000px){.g4{grid-template-columns:1fr 1fr}.g3,.g2{grid-template-columns:1fr}aside{width:70px}.nav span.t,.brand b,.side-foot{display:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{margin:0 0 12px;font-size:14px}
+.kpi .n{font-size:28px;font-weight:700}.kpi .l{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.kpi .s{font-size:12px;margin-top:4px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;color:var(--mute);font-weight:600;font-size:12px;padding:8px;border-bottom:1px solid var(--line)}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.row:hover{background:#f8faff;cursor:pointer}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600}
+.p-ok{background:#dff5ea;color:#0d7a4d}.p-warn{background:#fdf0d3;color:#8a5a00}.p-bad{background:#fde3e4;color:#a8262b}.p-mute{background:#eaeef5;color:#4a5872}.p-acc{background:var(--acc2);color:#1f4fc4}
+.bar{height:7px;background:#eaeef5;border-radius:9px;overflow:hidden;min-width:70px}.bar>div{height:100%;background:var(--acc)}
+.tools{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.tools input[type=text]{width:260px}
+.avatar{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--acc2);color:#1f4fc4;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.col{background:#eef1f7;border-radius:12px;padding:10px;min-height:200px}
+.col h4{margin:0 0 8px;font-size:12px;color:var(--mute);text-transform:uppercase}
+.tcard{background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:8px}
+.tcard .m{color:var(--mute);font-size:12px;margin-top:4px;display:flex;justify-content:space-between;gap:6px}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:420px;max-width:100%;background:#fff;border-left:1px solid var(--line);box-shadow:-8px 0 30px rgba(15,25,45,.12);z-index:20;padding:22px;overflow:auto;transform:translateX(105%);transition:.2s}
+.drawer.open{transform:none}
+.modal-bg{position:fixed;inset:0;background:rgba(10,18,32,.45);z-index:30;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:22px;width:440px;max-width:94vw;display:grid;gap:10px}
+.modal label{font-size:12px;color:var(--mute);display:grid;gap:3px}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#16202e;color:#fff;padding:10px 18px;border-radius:10px;opacity:0;transition:.25s;z-index:50;pointer-events:none}
+#toast.on{opacity:1}
+.sw{width:38px;height:22px;border-radius:99px;background:#cbd3e1;position:relative;cursor:pointer;flex:none;transition:.15s}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s}
+.sw.on{background:var(--ok)}.sw.on:after{left:19px}
+.flex{display:flex;align-items:center;gap:10px}.sp{flex:1}
+.log{font:12px/1.6 ui-monospace,Consolas,monospace;background:#0f1728;color:#b9c6e4;border-radius:10px;padding:12px;max-height:210px;overflow:auto}
+.mute{color:var(--mute)}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin-top:8px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.note{background:var(--acc2);color:#1f4fc4;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand"><i></i><b>Northbeam Ops</b></div>
+  <div id="nav"></div>
+  <div class="side-foot">Interactive demo.<br>All data is fictional and resets on reload.</div>
+</aside>
+<main>
+  <header>
+    <h1 id="title">Dashboard</h1>
+    <span class="mute">Viewing as</span>
+    <select id="role"><option value="admin">Admin - Dana Whitfield</option><option value="manager">Manager - Marcus Lee</option><option value="member">Team member - Priya Nair</option></select>
+  </header>
+  <div class="demo">Demo build for proposal review. Switch the role at top right to see permissions change what you can view and edit.</div>
+  <div class="wrap" id="view"></div>
+</main>
+<div class="drawer" id="drawer"></div>
+<div class="modal-bg" id="modalbg"><div class="modal" id="modal"></div></div>
+<div id="toast"></div>
+
+<script>
+const day=n=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+n);return d};
+const iso=d=>d.toISOString().slice(0,10);
+const fmt=d=>new Date(d+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+const today=iso(day(0));
+const $=s=>document.querySelector(s);
+const team=[
+ {id:'u1',name:'Dana Whitfield',role:'admin',email:'dana@northbeam.io',cap:30},
+ {id:'u2',name:'Marcus Lee',role:'manager',email:'marcus@northbeam.io',cap:36},
+ {id:'u3',name:'Priya Nair',role:'member',email:'priya@northbeam.io',cap:40},
+ {id:'u4',name:'Tomas Reyes',role:'member',email:'tomas@northbeam.io',cap:40},
+ {id:'u5',name:'Chloe Baptiste',role:'member',email:'chloe@northbeam.io',cap:32},
+ {id:'u6',name:'Jonas Weber',role:'manager',email:'jonas@northbeam.io',cap:36}];
+const me={admin:'u1',manager:'u2',member:'u3'};
+const clients=[
+ {id:'c1',name:'Halcyon Logistics',contact:'Rena Ortiz',email:'rena@halcyon.example',phone:'+1 415 555 0142',status:'Active',industry:'Logistics',value:84000,since:'2024-03'},
+ {id:'c2',name:'Brightwater Dental Group',contact:'Dr. Sam Okafor',email:'sam@brightwater.example',phone:'+1 312 555 0187',status:'Active',industry:'Healthcare',value:46000,since:'2025-01'},
+ {id:'c3',name:'Kestrel Financial',contact:'Alina Petrov',email:'alina@kestrel.example',phone:'+44 20 5550 0133',status:'Active',industry:'Finance',value:129000,since:'2023-09'},
+ {id:'c4',name:'Orchard & Vine Foods',contact:'Ben Calloway',email:'ben@orchardvine.example',phone:'+1 503 555 0110',status:'Onboarding',industry:'Retail',value:22000,since:'2026-09'},
+ {id:'c5',name:'Meridian Construction',contact:'Lucia Gomez',email:'lucia@meridian.example',phone:'+1 713 555 0179',status:'At risk',industry:'Construction',value:67000,since:'2024-11'},
+ {id:'c6',name:'Pinecrest Education',contact:'Howard Tan',email:'howard@pinecrest.example',phone:'+1 617 555 0164',status:'Active',industry:'Education',value:31000,since:'2025-06'},
+ {id:'c7',name:'Solstice Energy',contact:'Mira Hassan',email:'mira@solstice.example',phone:'+49 30 5550 0118',status:'Paused',industry:'Energy',value:58000,since:'2024-05'},
+ {id:'c8',name:'Tidewell Hospitality',contact:'Gabe Moreno',email:'gabe@tidewell.example',phone:'+1 305 555 0156',status:'Active',industry:'Hospitality',value:39000,since:'2025-10'}];
+const projects=[
+ {id:'p1',name:'Fleet visibility portal',client:'c1',owner:'u2',status:'On track',start:-60,due:25,prio:'High'},
+ {id:'p2',name:'Patient intake redesign',client:'c2',owner:'u6',status:'On track',start:-30,due:40,prio:'Medium'},
+ {id:'p3',name:'Compliance reporting suite',client:'c3',owner:'u2',status:'At risk',start:-90,due:6,prio:'High'},
+ {id:'p4',name:'Supplier onboarding flow',client:'c4',owner:'u6',status:'Planning',start:-5,due:60,prio:'Medium'},
+ {id:'p5',name:'Site safety dashboard',client:'c5',owner:'u2',status:'Delayed',start:-100,due:-4,prio:'High'},
+ {id:'p6',name:'Learning analytics export',client:'c6',owner:'u6',status:'On track',start:-20,due:33,prio:'Low'},
+ {id:'p7',name:'Booking sync integration',client:'c8',owner:'u2',status:'On track',start:-15,due:21,prio:'Medium'}];
+const T=(id,p,t,a,due,st,pr,h)=>({id,p,title:t,a,due:iso(day(due)),status:st,prio:pr,h});
+let tasks=[
+ T('t1','p1','Build live map component','u3',4,'In progress','High',14),
+ T('t2','p1','Driver GPS webhook ingestion','u4',-2,'In progress','High',10),
+ T('t3','p1','Role-scoped client view','u3',12,'To do','Medium',8),
+ T('t4','p2','Intake form wireframes','u5',-6,'Review','Medium',6),
+ T('t5','p2','Insurance field validation','u4',15,'To do','Medium',9),
+ T('t6','p3','Audit trail export','u3',2,'In progress','High',12),
+ T('t7','p3','Regulatory report templates','u5',-1,'In progress','High',16),
+ T('t8','p3','Penetration test fixes','u4',5,'To do','High',11),
+ T('t9','p4','Vendor data model','u5',9,'To do','Medium',7),
+ T('t10','p4','Kickoff workshop prep','u6',3,'Done','Low',3),
+ T('t11','p5','Sensor feed adapter','u4',-8,'In progress','High',15),
+ T('t12','p5','Incident heat map','u3',-3,'Review','High',9),
+ T('t13','p5','Handover documentation','u5',7,'To do','Low',5),
+ T('t14','p6','CSV export service','u3',18,'To do','Low',6),
+ T('t15','p6','Cohort chart widgets','u5',22,'In progress','Medium',8),
+ T('t16','p7','Calendar API sync','u4',8,'In progress','Medium',10),
+ T('t17','p7','Overbooking alerts','u3',11,'To do','Medium',6),
+ T('t18','p1','Load testing','u4',20,'To do','Low',5),
+ T('t19','p2','Accessibility pass','u5',-10,'Done','Low',4),
+ T('t20','p3','Client sign-off meeting','u2',1,'To do','Medium',2),
+ T('t21','p7','Webhook retry queue','u3',-1,'To do','High',7),
+ T('t22','p1','Admin audit log','u3',6,'Done','Medium',5)];
+let integrations=[
+ {id:'i1',name:'Slack',desc:'Post overdue-task and deadline alerts to channels',on:true,last:'2 min ago'},
+ {id:'i2',name:'HubSpot CRM',desc:'Two-way sync of client records and contacts',on:true,last:'11 min ago'},
+ {id:'i3',name:'QuickBooks',desc:'Pull invoice status onto client profiles',on:true,last:'1 hr ago'},
+ {id:'i4',name:'Google Calendar',desc:'Push project milestones as calendar events',on:false,last:'never'},
+ {id:'i5',name:'Custom REST webhook',desc:'POST events to any endpoint with signed payloads',on:true,last:'6 min ago'}];
+let rules=[
+ {t:'When a task passes its due date',a:'Notify assignee and project owner on Slack',on:true},
+ {t:'Every Monday 08:00',a:'Email each manager a team workload summary',on:true},
+ {t:'When a client is marked At risk',a:'Create a review task and alert the account admin',on:true},
+ {t:'When a project is completed',a:'Request invoice sync from QuickBooks',on:false}];
+let logLines=['[auto] Overdue alert sent to #ops for "Driver GPS webhook ingestion"','[sync] HubSpot: 3 contacts updated, 0 conflicts','[sync] QuickBooks: 2 invoices marked paid'];
+let S={role:'admin',view:'dashboard',q:'',cf:'All',pf:'All',tf:'All',mine:false,tview:'board'};
+const cname=id=>clients.find(c=>c.id===id)?.name||'';
+const uname=id=>team.find(u=>u.id===id)?.name||'';
+const ini=n=>n.split(' ').map(x=>x[0]).join('');
+const money=n=>'$'+n.toLocaleString();
+const isOver=t=>t.status!=='Done'&&t.due<today;
+const perm={
+ admin:{clientsEdit:1,tasksAll:1,projCreate:1,users:1,integ:1,money:1},
+ manager:{clientsEdit:1,tasksAll:1,projCreate:1,users:0,integ:0,money:1},
+ member:{clientsEdit:0,tasksAll:0,projCreate:0,users:0,integ:0,money:0}};
+const can=k=>perm[S.role][k];
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200)};
+const pill=(s)=>{const m={Active:'ok','On track':'ok',Done:'ok',Onboarding:'acc',Planning:'acc','In progress':'acc',Review:'warn','At risk':'warn',Paused:'mute','To do':'mute',Delayed:'bad',High:'bad',Medium:'warn',Low:'mute'};return `<span class="pill p-${m[s]||'mute'}">${s}</span>`};
+const av=id=>`<span class="avatar">${ini(uname(id))}</span>${uname(id)}`;
+const pct=pid=>{const ts=tasks.filter(t=>t.p===pid);return ts.length?Math.round(ts.filter(t=>t.status==='Done').length/ts.length*100):0};
+const pdue=p=>iso(day(p.due));
+
+const views=[
+ ['dashboard','Dashboard',0],['clients','Clients',0],['projects','Projects',0],['tasks','Tasks',0],['workload','Team workload',0],['integrations','Integrations',1],['users','Users & roles',1]];
+function renderNav(){
+ $('#nav').innerHTML=views.map(([k,l,adm])=>{
+  const lock=(k==='users'&&!can('users'))||(k==='integrations'&&S.role==='member');
+  return `<div class="nav ${S.view===k?'on':''} ${lock?'lock':''}" data-k="${k}"><span class="t">${l}</span>${lock?'<span>&#128274;</span>':''}</div>`}).join('');
+ document.querySelectorAll('.nav').forEach(n=>n.onclick=()=>go(n.dataset.k));
+}
+function go(k){
+ if(k==='users'&&!can('users')){toast('Only administrators can manage users');return}
+ if(k==='integrations'&&S.role==='member'){toast('Integrations are restricted to managers and admins');return}
+ S.view=k;closeDrawer();render()}
+$('#role').onchange=e=>{S.role=e.target.value;toast('Now viewing as '+uname(me[S.role])+' ('+S.role+')');if(!['dashboard','clients','projects','tasks','workload','integrations'].includes(S.view)||(S.view==='integrations'&&S.role==='member'))S.view='dashboard';closeDrawer();render()};
+
+function donut(data,size=150){
+ const tot=data.reduce((a,d)=>a+d.v,0)||1;let a0=-Math.PI/2;const r=size/2-8,ir=r*.62,c=size/2;
+ let s=`<svg width="${size}" height="${size}">`;
+ data.forEach(d=>{const a1=a0+d.v/tot*Math.PI*2;if(d.v){const big=a1-a0>Math.PI?1:0;
+  const p=(r_,a)=>[c+r_*Math.cos(a),c+r_*Math.sin(a)];
+  const [x1,y1]=p(r,a0),[x2,y2]=p(r,a1-.0001),[x3,y3]=p(ir,a1-.0001),[x4,y4]=p(ir,a0);
+  s+=`<path d="M${x1} ${y1}A${r} ${r} 0 ${big} 1 ${x2} ${y2}L${x3} ${y3}A${ir} ${ir} 0 ${big} 0 ${x4} ${y4}Z" fill="${d.c}"/>`}a0=a1});
+ s+=`<text x="${c}" y="${c+6}" text-anchor="middle" font-size="22" font-weight="700" fill="#16202e">${tot}</text></svg>`;return s}
+function bars(data,w=420,h=170,max){
+ max=max||Math.max(...data.map(d=>d.v),1)*1.2;const bw=w/data.length;
+ let s=`<svg viewBox="0 0 ${w} ${h+26}" width="100%">`;
+ [0,.5,1].forEach(f=>{const y=h-f*h;s+=`<line x1="0" x2="${w}" y1="${y}" y2="${y}" stroke="#e3e8f0"/>`});
+ data.forEach((d,i)=>{const bh=d.v/max*h;s+=`<rect x="${i*bw+bw*.2}" y="${h-bh}" width="${bw*.6}" height="${bh}" rx="5" fill="${d.c||'#2f6bff'}"/><text x="${i*bw+bw/2}" y="${h-bh-5}" text-anchor="middle" font-size="11" fill="#64718a">${d.v}</text><text x="${i*bw+bw/2}" y="${h+16}" text-anchor="middle" font-size="11" fill="#64718a">${d.l}</text>`});
+ return s+'</svg>'}
+
+function dashboard(){
+ const pf=S.pf==='All'?projects:projects.filter(p=>p.status===S.pf);
+ const pids=pf.map(p=>p.id);const ts=tasks.filter(t=>pids.includes(t.p));
+ const over=ts.filter(isOver),soon=ts.filter(t=>t.status!=='Done'&&t.due>=today&&t.due<=iso(day(7)));
+ const done=ts.filter(t=>t.status==='Done').length;
+ const stat=['On track','At risk','Delayed','Planning'].map(s=>({l:s,v:pf.filter(p=>p.status===s).length,c:{'On track':'#18a56b','At risk':'#e69a14',Delayed:'#e5484d',Planning:'#8aa6e8'}[s]}));
+ const load=team.map(u=>({l:u.name.split(' ')[0],v:ts.filter(t=>t.a===u.id&&t.status!=='Done').length}));
+ const wk=[3,5,4,7,6,9].map((v,i)=>({l:'W'+(i+1),v,c:i===5?'#2f6bff':'#9db8f5'}));
+ return `<div class="tools"><b>Project status:</b><select id="dpf">${['All','On track','At risk','Delayed','Planning'].map(o=>`<option ${o===S.pf?'selected':''}>${o}</option>`).join('')}</select><span class="mute">Filters every figure and chart below.</span></div>
+ <div class="grid g4">
+  <div class="card kpi"><div class="l">Active projects</div><div class="n">${pf.length}</div><div class="s mute">${clients.filter(c=>c.status==='Active').length} active clients</div></div>
+  <div class="card kpi"><div class="l">Overdue tasks</div><div class="n" style="color:var(--bad)">${over.length}</div><div class="s mute">Needs attention today</div></div>
+  <div class="card kpi"><div class="l">Due in 7 days</div><div class="n">${soon.length}</div><div class="s mute">Upcoming deadlines</div></div>
+  <div class="card kpi"><div class="l">Completion</div><div class="n">${ts.length?Math.round(done/ts.length*100):0}%</div><div class="s mute">${done} of ${ts.length} tasks</div></div>
+ </div>
+ <div class="grid g3" style="margin-top:16px">
+  <div class="card"><h3>Projects by status</h3><div class="flex">${donut(stat)}<div class="legend" style="flex-direction:column">${stat.map(s=>`<div><i style="background:${s.c}"></i>${s.l}: ${s.v}</div>`).join('')}</div></div></div>
+  <div class="card"><h3>Open tasks per person</h3>${bars(load,300,150)}</div>
+  <div class="card"><h3>Tasks completed per week</h3>${bars(wk,300,150)}</div>
+ </div>
+ <div class="grid g2" style="margin-top:16px">
+  <div class="card"><h3>Overdue tasks</h3>${over.length?`<table>${over.map(t=>`<tr class="row" data-t="${t.id}"><td><b>${t.title}</b><div class="mute">${projects.find(p=>p.id===t.p).name}</div></td><td>${av(t.a)}</td><td><span class="pill p-bad">${fmt(t.due)}</span></td></tr>`).join('')}</table>`:'<div class="mute">Nothing overdue.</div>'}</div>
+  <div class="card"><h3>Upcoming deadlines</h3><table>${[...projects].filter(p=>pids.includes(p.id)).sort((a,b)=>a.due-b.due).slice(0,5).map(p=>`<tr class="row" data-p="${p.id}"><td><b>${p.name}</b><div class="mute">${cname(p.client)}</div></td><td>${pill(p.status)}</td><td>${fmt(pdue(p))}</td></tr>`).join('')}</table></div>
+ </div>`}
+
+function clientsView(){
+ const q=S.q.toLowerCase();
+ const list=clients.filter(c=>(S.cf==='All'||c.status===S.cf)&&(!q||(c.name+c.contact+c.industry+c.email).toLowerCase().includes(q)));
+ return `<div class="tools"><input type="text" id="q" placeholder="Search name, contact, industry..." value="${S.q}"><select id="cf">${['All','Active','Onboarding','At risk','Paused'].map(o=>`<option ${o===S.cf?'selected':''}>${o}</option>`).join('')}</select><span class="sp"></span><button class="pri" id="addc">+ New client</button></div>
+ <div class="card" style="padding:0"><table><tr><th>Client</th><th>Primary contact</th><th>Status</th><th>Projects</th><th>${can('money')?'Account value':''}</th></tr>
+ ${list.map(c=>`<tr class="row" data-c="${c.id}"><td><b>${c.name}</b><div class="mute">${c.industry}</div></td><td>${c.contact}<div class="mute">${c.email}</div></td><td>${pill(c.status)}</td><td>${projects.filter(p=>p.client===c.id).length}</td><td>${can('money')?money(c.value):'<span class="mute">Restricted</span>'}</td></tr>`).join('')||'<tr><td colspan=5 class="mute">No clients match.</td></tr>'}</table></div>`}
+
+function projectsView(){
+ return `<div class="tools"><span class="mute">${projects.length} projects</span><span class="sp"></span><button class="pri" id="addp">+ New project</button></div>
+ <div class="card" style="padding:0"><table><tr><th>Project</th><th>Client</th><th>Owner</th><th>Status</th><th>Progress</th><th>Due</th><th>Priority</th></tr>
+ ${projects.map(p=>`<tr class="row" data-p="${p.id}"><td><b>${p.name}</b></td><td>${cname(p.client)}</td><td>${av(p.owner)}</td><td>${pill(p.status)}</td><td style="width:130px"><div class="bar"><div style="width:${pct(p.id)}%"></div></div><span class="mute">${pct(p.id)}%</span></td><td>${fmt(pdue(p))}</td><td>${pill(p.prio)}</td></tr>`).join('')}</table></div>`}
+
+function tasksView(){
+ const mine=S.role==='member'||S.mine;
+ let ts=tasks.filter(t=>(!mine||t.a===me[S.role])&&(S.tf==='All'||t.prio===S.tf));
+ const cols=['To do','In progress','Review','Done'];
+ return `<div class="tools"><select id="tf">${['All','High','Medium','Low'].map(o=>`<option value="${o}" ${o===S.tf?'selected':''}>${o==='All'?'All priorities':o+' priority'}</option>`).join('')}</select>
+ ${S.role==='member'?'<span class="pill p-acc">Showing your tasks</span>':`<label><input type="checkbox" id="mine" ${S.mine?'checked':''}> Only my tasks</label>`}
+ <span class="sp"></span><button class="pri" id="addt">+ New task</button></div>
+ <div class="board">${cols.map(c=>`<div class="col"><h4>${c} (${ts.filter(t=>t.status===c).length})</h4>${ts.filter(t=>t.status===c).map(t=>`<div class="tcard"><b>${t.title}</b><div class="mute" style="font-size:12px">${projects.find(p=>p.id===t.p).name}</div><div class="m"><span>${av(t.a)}</span><span style="${isOver(t)?'color:var(--bad);font-weight:600':''}">${fmt(t.due)}${isOver(t)?' overdue':''}</span></div><div class="m"><span>${pill(t.prio)}</span><span><button class="sm" data-adv="${t.id}">${t.status==='Done'?'Reopen':'Advance &rarr;'}</button></span></div></div>`).join('')}</div>`).join('')}</div>`}
+
+function workloadView(){
+ return `<div class="grid g2"><div class="card"><h3>Open hours vs weekly capacity</h3>${team.map(u=>{const h=tasks.filter(t=>t.a===u.id&&t.status!=='Done').reduce((a,t)=>a+t.h,0);const p=Math.round(h/u.cap*100);const col=p>110?'var(--bad)':p>85?'var(--warn)':'var(--ok)';
+ return `<div style="margin-bottom:14px"><div class="flex"><span>${av(u.id)}</span><span class="sp"></span><span class="mute">${h}h of ${u.cap}h</span><span class="pill ${p>110?'p-bad':p>85?'p-warn':'p-ok'}">${p}%</span></div><div class="bar" style="margin-top:6px"><div style="width:${Math.min(p,100)}%;background:${col}"></div></div></div>`}).join('')}</div>
+ <div class="card"><h3>Capacity guidance</h3><div class="note">Anyone above 110% of weekly capacity is flagged so managers can rebalance before deadlines slip.</div><p class="mute">Demo rule: weekly capacity is configurable per person. Workload is calculated from estimated hours on open tasks.</p>${can('tasksAll')?'<button id="rebal">Suggest rebalance</button>':'<span class="mute">Managers and admins can request rebalancing.</span>'}<div id="rebout" style="margin-top:12px"></div></div></div>`}
+
+function integView(){
+ return `<div class="grid g2"><div class="card"><h3>Connected tools</h3>${integrations.map(i=>`<div class="flex" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><b>${i.name}</b><div class="mute">${i.desc}</div><div class="mute" style="font-size:12px">Last sync: ${i.last}</div></div><button class="sm" data-sync="${i.id}" ${i.on?'':'disabled'}>Sync now</button><div class="sw ${i.on?'on':''}" data-int="${i.id}"></div></div>`).join('')}</div>
+ <div><div class="card"><h3>Automation rules</h3>${rules.map((r,i)=>`<div class="flex" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><b>${r.t}</b><div class="mute">${r.a}</div></div><div class="sw ${r.on?'on':''}" data-rule="${i}"></div></div>`).join('')}</div>
+ <div class="card" style="margin-top:16px"><h3>Activity log</h3><div class="log" id="log">${logLines.map(l=>`<div>${l}</div>`).join('')}</div></div></div></div>`}
+
+function usersView(){
+ return `<div class="note">Authorization is enforced on the server for every request in the real build. This screen shows the permission model.</div>
+ <div class="grid g2"><div class="card" style="padding:0"><table><tr><th>User</th><th>Role</th></tr>${team.map(u=>`<tr><td><b>${u.name}</b><div class="mute">${u.email}</div></td><td><select data-role="${u.id}">${['admin','manager','member'].map(r=>`<option ${r===u.role?'selected':''}>${r}</option>`).join('')}</select></td></tr>`).join('')}</table></div>
+ <div class="card"><h3>Permission matrix</h3><table><tr><th>Capability</th><th>Admin</th><th>Manager</th><th>Member</th></tr>
+ ${[['View clients and projects','Y','Y','Y'],['Edit client records','Y','Y','-'],['See account values','Y','Y','-'],['Create projects and assign tasks','Y','Y','-'],['Update own tasks','Y','Y','Y'],['Update anyone\'s tasks','Y','Y','-'],['Manage integrations','Y','Y','-'],['Manage users and roles','Y','-','-']].map(r=>`<tr><td>${r[0]}</td>${r.slice(1).map(x=>`<td>${x==='Y'?'<span class="pill p-ok">Yes</span>':'<span class="pill p-mute">No</span>'}</td>`).join('')}</tr>`).join('')}</table></div></div>`}
+
+function render(){
+ renderNav();
+ const t={dashboard:'Dashboard',clients:'Clients',projects:'Projects',tasks:'Tasks',workload:'Team workload',integrations:'Integrations & automation',users:'Users & roles'}[S.view];
+ $('#title').textContent=t;
+ $('#view').innerHTML={dashboard,clients:clientsView,projects:projectsView,tasks:tasksView,workload:workloadView,integrations:integView,users:usersView}[S.view]();
+ bind()}
+
+function bind(){
+ const on=(s,ev,f)=>{const e=$(s);if(e)e[ev]=f};
+ on('#dpf','onchange',e=>{S.pf=e.target.value;render()});
+ on('#q','oninput',e=>{S.q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)});
+ on('#cf','onchange',e=>{S.cf=e.target.value;render()});
+ on('#tf','onchange',e=>{S.tf=e.target.value;render()});
+ on('#mine','onchange',e=>{S.mine=e.target.checked;render()});
+ on('#addc','onclick',()=>can('clientsEdit')?newClient():toast('Your role cannot create clients'));
+ on('#addp','onclick',()=>can('projCreate')?newProject():toast('Only managers and admins can create projects'));
+ on('#addt','onclick',()=>can('tasksAll')?newTask():toast('Only managers and admins can assign new tasks'));
+ on('#rebal','onclick',()=>{const over=team.filter(u=>tasks.filter(t=>t.a===u.id&&t.status!=='Done').reduce((a,t)=>a+t.h,0)/u.cap>1.1);const free=[...team].sort((a,b)=>load(a)/a.cap-load(b)/b.cap)[0];
+  $('#rebout').innerHTML=over.length?over.map(u=>{const t=tasks.filter(t=>t.a===u.id&&t.status==='To do').sort((a,b)=>b.h-a.h)[0];return t?`<div class="note">Move "${t.title}" (${t.h}h) from ${u.name} to ${free.name}, who has the most spare capacity.</div>`:''}).join(''):'<div class="note">Everyone is within capacity.</div>'});
+ document.querySelectorAll('[data-c]').forEach(e=>e.onclick=()=>clientDrawer(e.dataset.c));
+ document.querySelectorAll('[data-p]').forEach(e=>e.onclick=()=>projDrawer(e.dataset.p));
+ document.querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{S.view='tasks';render()});
+ document.querySelectorAll('[data-adv]').forEach(b=>b.onclick=()=>{
+  const t=tasks.find(x=>x.id===b.dataset.adv);
+  if(!can('tasksAll')&&t.a!==me[S.role]){toast('Members can only update their own tasks');return}
+  const o=['To do','In progress','Review','Done'];t.status=t.status==='Done'?'To do':o[o.indexOf(t.status)+1];
+  if(t.status==='Done')logLines.unshift(`[auto] "${t.title}" completed, ${uname(t.a)} credited, owner notified`);
+  toast(`"${t.title}" moved to ${t.status}`);render()});
+ document.querySelectorAll('[data-int]').forEach(e=>e.onclick=()=>{if(!can('integ')){toast('Only administrators can change integrations');return}const i=integrations.find(x=>x.id===e.dataset.int);i.on=!i.on;toast(i.name+(i.on?' connected':' disconnected'));render()});
+ document.querySelectorAll('[data-rule]').forEach(e=>e.onclick=()=>{if(!can('integ')){toast('Only administrators can change automation rules');return}const r=rules[e.dataset.rule];r.on=!r.on;render()});
+ document.querySelectorAll('[data-sync]').forEach(b=>b.onclick=()=>{const i=integrations.find(x=>x.id===b.dataset.sync);b.textContent='Syncing...';
+  setTimeout(()=>{i.last='just now';logLines.unshift(`[sync] ${i.name}: ${Math.floor(Math.random()*6)+1} records synchronized, 0 conflicts`);render()},700)});
+ document.querySelectorAll('[data-role]').forEach(s=>s.onchange=()=>{team.find(u=>u.id===s.dataset.role).role=s.value;toast('Role updated and written to the audit log')});
+}
+const load=u=>tasks.filter(t=>t.a===u.id&&t.status!=='Done').reduce((a,t)=>a+t.h,0);
+
+function clientDrawer(id){
+ const c=clients.find(x=>x.id===id),ps=projects.filter(p=>p.client===id);
+ $('#drawer').innerHTML=`<div class="flex"><h2 style="margin:0" class="sp">${c.name}</h2><button class="sm" onclick="closeDrawer()">Close</button></div>
+ <p>${pill(c.status)} <span class="mute">${c.industry} - client since ${c.since}</span></p>
+ <div class="card"><h3>Contact</h3>${c.contact}<br>${c.email}<br>${c.phone}</div>
+ ${can('money')?`<div class="card" style="margin-top:12px"><h3>Account</h3>Lifetime value: <b>${money(c.value)}</b><br><span class="mute">Invoice status synced from QuickBooks</span></div>`:''}
+ <div class="card" style="margin-top:12px"><h3>Projects (${ps.length})</h3>${ps.map(p=>`<div class="flex" style="margin-bottom:8px"><span class="sp">${p.name}</span>${pill(p.status)}</div>`).join('')||'<span class="mute">No projects yet.</span>'}</div>
+ <div class="card" style="margin-top:12px"><h3>Recent activity</h3><div class="mute">${fmt(iso(day(-1)))} - Status review with ${c.contact}<br>${fmt(iso(day(-4)))} - Contract documents updated<br>${fmt(iso(day(-9)))} - Invoice sent</div></div>
+ <div style="margin-top:14px" class="flex"><select id="cst" ${can('clientsEdit')?'':'disabled'}>${['Active','Onboarding','At risk','Paused'].map(o=>`<option ${o===c.status?'selected':''}>${o}</option>`).join('')}</select><button class="pri" id="csave">${can('clientsEdit')?'Save status':'Read-only for your role'}</button></div>`;
+ $('#drawer').classList.add('open');
+ $('#csave').onclick=()=>{if(!can('clientsEdit')){toast('Your role has read-only access to clients');return}c.status=$('#cst').value;toast('Client updated');closeDrawer();render()}}
+function projDrawer(id){
+ const p=projects.find(x=>x.id===id),ts=tasks.filter(t=>t.p===id);
+ $('#drawer').innerHTML=`<div class="flex"><h2 style="margin:0" class="sp">${p.name}</h2><button class="sm" onclick="closeDrawer()">Close</button></div>
+ <p>${pill(p.status)} ${pill(p.prio)} <span class="mute">${cname(p.client)} - due ${fmt(pdue(p))}</span></p>
+ <div class="bar"><div style="width:${pct(id)}%"></div></div><p class="mute">${pct(id)}% complete - owner ${uname(p.owner)}</p>
+ <div class="card"><h3>Tasks (${ts.length})</h3>${ts.map(t=>`<div class="flex" style="padding:6px 0;border-bottom:1px solid var(--line)"><span class="sp">${t.title}<div class="mute" style="font-size:12px">${uname(t.a)} - ${fmt(t.due)}</div></span>${pill(isOver(t)?'Delayed':t.status)}</div>`).join('')}</div>`;
+ $('#drawer').classList.add('open')}
+function closeDrawer(){$('#drawer').classList.remove('open')}
+
+function modal(html,ok){ $('#modal').innerHTML=html+`<div class="flex"><span class="sp"></span><button id="mc">Cancel</button><button class="pri" id="mo">Create</button></div>`;$('#modalbg').classList.add('open');
+ $('#mc').onclick=()=>$('#modalbg').classList.remove('open');$('#mo').onclick=()=>{if(ok()!==false)$('#modalbg').classList.remove('open')}}
+const opts=(a,f)=>a.map(x=>`<option value="${x.id}">${f(x)}</option>`).join('');
+function newTask(){modal(`<h3 style="margin:0">New task</h3><label>Title<input type="text" id="f1"></label><label>Project<select id="f2">${opts(projects,p=>p.name)}</select></label><label>Assignee<select id="f3">${opts(team,u=>u.name)}</select></label><label>Due date<input type="date" id="f4" value="${iso(day(7))}"></label><label>Priority<select id="f5"><option>High</option><option selected>Medium</option><option>Low</option></select></label>`,
+ ()=>{const t=$('#f1').value.trim();if(!t){toast('Give the task a title');return false}tasks.push({id:'t'+Date.now(),p:$('#f2').value,title:t,a:$('#f3').value,due:$('#f4').value,status:'To do',prio:$('#f5').value,h:6});logLines.unshift(`[auto] Slack: ${uname($('#f3').value)} notified of new task "${t}"`);toast('Task created and assignee notified');render()})}
+function newProject(){modal(`<h3 style="margin:0">New project</h3><label>Name<input type="text" id="f1"></label><label>Client<select id="f2">${opts(clients,c=>c.name)}</select></label><label>Owner<select id="f3">${opts(team.filter(u=>u.role!=='member'),u=>u.name)}</select></label><label>Due date<input type="date" id="f4" value="${iso(day(45))}"></label>`,
+ ()=>{const n=$('#f1').value.trim();if(!n){toast('Give the project a name');return false}projects.push({id:'p'+Date.now(),name:n,client:$('#f2').value,owner:$('#f3').value,status:'Planning',start:0,due:Math.round((new Date($('#f4').value)-day(0))/864e5),prio:'Medium'});toast('Project created');render()})}
+function newClient(){modal(`<h3 style="margin:0">New client</h3><label>Company<input type="text" id="f1"></label><label>Primary contact<input type="text" id="f2"></label><label>Email<input type="text" id="f3"></label><label>Industry<input type="text" id="f4"></label>`,
+ ()=>{const n=$('#f1').value.trim();if(!n){toast('Company name is required');return false}clients.unshift({id:'c'+Date.now(),name:n,contact:$('#f2').value||'-',email:$('#f3').value||'-',phone:'-',status:'Onboarding',industry:$('#f4').value||'-',value:0,since:today.slice(0,7)});logLines.unshift(`[sync] HubSpot: new company "${n}" pushed`);toast('Client created and synced to HubSpot');render()})}
+render();
+</script>
+</body>
+</html>
